@@ -1,0 +1,39 @@
+{
+  "$schema": "./schema.json",
+  "id": "video-to-spine",
+  "name": "视频循环帧生成器",
+  "version": "1.0.0",
+  "author": "Naimo Tools Team",
+  "icon": "./ico.png",
+  "description": "智能检测视频循环帧，生成完美循环动画，支持 Spine 动画制作",
+  "category": "image_video",
+  "enabled": true,
+  "main": "./index.html",
+  "preload": "./preload.js",
+  "feature": [
+    {
+      "path": "loop-detector",
+      "name": "循环帧检测",
+      "icon": "./ico.png",
+      "description": "从视频中智能检测循环帧，生成完美循环动画",
+      "type": "text"
+    },
+    {
+      "path": "loop-from-video",
+      "name": "视频循环帧检测",
+      "icon": "./ico.png",
+      "description": "拖入视频文件进行循环帧检测",
+      "type": "files",
+      "fileType": "file",
+      "extensions": [
+        ".mp4",
+        ".avi",
+        ".mov",
+        ".webm",
+        ".mkv"
+      ],
+      "minLength": 1,
+      "maxLength": 1
+    }
+  ]
+}
