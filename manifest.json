@@ -1,0 +1,22 @@
+{
+  "$schema": "./schema.json",
+  "id": "video-to-spine",
+  "name": "视频帧提取",
+  "version": "1.0.0",
+  "author": "Naimo Tools Team",
+  "icon": "./ico.png",
+  "description": "智能检测视频循环帧，生成完美循环动画，支持 Spine 动画制作",
+  "category": "image_video",
+  "enabled": true,
+  "main": "./index.html",
+  "preload": "./preload.js",
+  "feature": [
+    {
+      "path": "loop-detector",
+      "name": "视频帧提取",
+      "icon": "./ico.png",
+      "description": "从视频中提取帧序列，支持循环帧检测和视频生成",
+      "type": "text"
+    }
+  ]
+}
