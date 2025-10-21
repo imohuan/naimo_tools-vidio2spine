@@ -1,11 +1,11 @@
 <template>
-  <div class="h-screen bg-gray-50 p-6 flex flex-col">
+  <div class="h-screen bg-gray-50 p-2 lg:p-6 flex flex-col">
     <div class="max-w-6xl w-full mx-auto flex flex-col flex-1 min-h-0">
       <!-- 阶段导航 -->
       <Timeline v-model:currentStage="currentStage" :max-stage="maxStage" />
 
       <!-- 阶段视图 -->
-      <div class="mt-8 flex-1 h-full overflow-hidden">
+      <div class="mt-4 lg:mt-8 flex-1 h-full overflow-hidden">
         <Stage1Crop
           v-show="currentStage === 1"
           class="h-full"

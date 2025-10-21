@@ -1,7 +1,7 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full pb-2">
+  <div class="grid grid-cols-2 gap-4 lg:gap-8 h-full pb-2">
     <!-- Left Panel: Video Preview -->
-    <div class="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0">
+    <div class="bg-white rounded-lg shadow-md p-2 lg:p-6 flex flex-col min-h-0">
       <div class="mb-4 border-b border-gray-200">
         <nav class="flex space-x-4" aria-label="Tabs">
           <button

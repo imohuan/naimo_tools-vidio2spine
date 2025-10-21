@@ -1,9 +1,9 @@
 <template>
-  <div
-    class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full overflow-hidden pb-2"
-  >
+  <div class="grid grid-cols-2 gap-4 lg:gap-8 h-full overflow-hidden pb-2">
     <!-- Left Panel: Video Display -->
-    <div class="bg-white rounded-lg shadow-md p-6 flex flex-col h-full min-h-0">
+    <div
+      class="bg-white rounded-lg shadow-md p-2 lg:p-6 flex flex-col h-full min-h-0"
+    >
       <UploadArea
         v-if="!videoUrl"
         accept="video/*"

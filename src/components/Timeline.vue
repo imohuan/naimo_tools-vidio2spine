@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow-md p-4 flex items-center justify-center space-x-8"
+    class="bg-white rounded-lg shadow-md p-2 lg:p-4 text-sm lg:text-base flex items-center justify-center gap-2 lg:gap-8"
   >
     <div
       v-for="(stage, index) in stages"
@@ -13,7 +13,7 @@
         @click="onClick(stage.id)"
       >
         <div
-          class="rounded-full h-10 w-10 flex items-center justify-center font-bold text-lg"
+          class="rounded-full h-6 w-6 lg:h-10 lg:w-10 flex items-center justify-center font-bold text-sm lg:text-lg"
           :class="getStageClass(stage.id)"
         >
           {{ stage.id }}
