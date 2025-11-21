@@ -9,6 +9,16 @@
       :class="
         enablePick && !isSpacePressed ? 'cursor-crosshair' : 'cursor-move'
       "
+      :style="{
+        backgroundImage: `
+          linear-gradient(45deg, #CCCCCC 25%, transparent 25%),
+          linear-gradient(-45deg, #CCCCCC 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #CCCCCC 75%),
+          linear-gradient(-45deg, transparent 75%, #CCCCCC 75%)
+        `,
+        backgroundSize: '20px 20px',
+        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+      }"
       @mousedown="handleMouseDown"
       @wheel.prevent="handleWheel"
       @click="handleClick"
@@ -124,6 +134,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import { drawTransparentBackground } from "../utils/transparent-bg";
 
 const props = defineProps<{
   originalUrl: string;
@@ -271,12 +282,19 @@ function draw() {
       canvas.height
     );
 
-    // 绘制右侧结果
+    // 绘制右侧结果（先绘制透明背景，再绘制结果图）
+    // 创建临时画布绘制结果图
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
     const tempCtx = tempCanvas.getContext("2d")!;
+
+    // 在临时画布上先绘制透明背景（棋盘格）
+    drawTransparentBackground(tempCtx, canvas.width, canvas.height, 10);
+    // 再绘制结果图（透明部分会显示背景）
     tempCtx.putImageData(props.resultImageData, 0, 0);
+
+    // 将临时画布的右侧部分绘制到主画布
     ctx.drawImage(
       tempCanvas,
       splitX,

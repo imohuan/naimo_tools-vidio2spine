@@ -70,6 +70,12 @@ const stages = computed(() => [
     description: "抠图顺帧并生成视频",
     enabled: props.maxStage >= 3,
   },
+  {
+    id: 4,
+    title: "制作雪碧图",
+    description: "将序列帧制作成雪碧图",
+    enabled: props.maxStage >= 4,
+  },
 ]);
 
 const getStageClass = (stageId: number) => {

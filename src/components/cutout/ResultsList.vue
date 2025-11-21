@@ -13,10 +13,24 @@
           :key="r.index"
           class="border rounded-md overflow-hidden"
         >
-          <canvas
-            :ref="(el) => setCanvasRef(el, r.index)"
-            class="w-full h-auto"
-          ></canvas>
+          <div
+            class="w-full"
+            :style="{
+              backgroundImage: `
+                linear-gradient(45deg, #CCCCCC 25%, transparent 25%),
+                linear-gradient(-45deg, #CCCCCC 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #CCCCCC 75%),
+                linear-gradient(-45deg, transparent 75%, #CCCCCC 75%)
+              `,
+              backgroundSize: '10px 10px',
+              backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px',
+            }"
+          >
+            <canvas
+              :ref="(el) => setCanvasRef(el, r.index)"
+              class="w-full h-auto block"
+            ></canvas>
+          </div>
           <div class="text-xs text-gray-600 px-2 py-1">#{{ r.index + 1 }}</div>
         </div>
       </div>
@@ -59,6 +73,7 @@
 
 <script setup lang="ts">
 import { onMounted, watch, nextTick, computed } from "vue";
+import { drawTransparentBackground } from "../../utils/transparent-bg";
 
 const props = defineProps<{
   results: Array<{ index: number; imageData: ImageData }>;
@@ -95,6 +110,10 @@ function renderAll() {
     c.height = r.imageData.height;
     const ctx = c.getContext("2d");
     if (!ctx) continue;
+
+    // 先绘制透明背景（棋盘格）
+    drawTransparentBackground(ctx, c.width, c.height, 10);
+    // 再绘制结果图（透明部分会显示背景）
     ctx.putImageData(r.imageData, 0, 0);
   }
 }

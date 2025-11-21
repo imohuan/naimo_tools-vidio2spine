@@ -70,7 +70,17 @@
         <div v-else class="flex-1 min-h-0 flex flex-col gap-3">
           <!-- 播放器画布 -->
           <div
-            class="flex-1 bg-white rounded-lg overflow-hidden flex items-center justify-center min-h-0"
+            class="flex-1 rounded-lg overflow-hidden flex items-center justify-center min-h-0"
+            :style="{
+              backgroundImage: `
+                linear-gradient(45deg, #CCCCCC 25%, transparent 25%),
+                linear-gradient(-45deg, #CCCCCC 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #CCCCCC 75%),
+                linear-gradient(-45deg, transparent 75%, #CCCCCC 75%)
+              `,
+              backgroundSize: '20px 20px',
+              backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+            }"
           >
             <canvas
               ref="animationCanvas"
@@ -131,10 +141,11 @@
               循环播放
             </label>
 
-            <!-- 下载序列帧 -->
+            <!-- 进入第四阶段 -->
             <button
-              @click="downloadFrames"
-              class="ml-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center gap-2"
+              @click="handleEnterSprite"
+              :disabled="validResults.length === 0"
+              class="ml-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <svg
                 class="w-5 h-5"
@@ -146,10 +157,10 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
                 />
               </svg>
-              下载序列帧
+              进入第四阶段
             </button>
           </div>
         </div>
@@ -261,6 +272,7 @@ import ColorPluginPanel from "../components/cutout/plugins/ColorPluginPanel.vue"
 import ImglyPluginPanel from "../components/cutout/plugins/ImglyPluginPanel.vue";
 import { useBoolean } from "../composables/useBoolean";
 import { destroyImglyWorker } from "../utils/imgly-worker";
+import { drawTransparentBackground } from "../utils/transparent-bg";
 
 interface Frame {
   url: string;
@@ -273,6 +285,18 @@ const props = defineProps<{
   isProcessing: boolean;
   ffmpegProgress?: { text: string; percent: number };
 }>();
+
+const emit = defineEmits<{
+  (e: "enterSprite", results: Array<{ index: number; imageData: ImageData }>): void;
+}>();
+
+const handleEnterSprite = () => {
+  if (validResults.value.length === 0) {
+    alert("请先完成抠图处理");
+    return;
+  }
+  emit("enterSprite", validResults.value);
+};
 
 const leftTab = ref<"frames" | "single" | "results" | "video">("frames");
 const activeFrameIndex = ref(0);
@@ -564,11 +588,10 @@ function renderFrame(frameIndex: number) {
   // 清空画布
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 绘制白色背景
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // 绘制透明背景（棋盘格）
+  drawTransparentBackground(ctx, canvas.width, canvas.height, 10);
 
-  // 绘制当前帧
+  // 绘制当前帧（透明部分会显示背景）
   ctx.putImageData(result.imageData, 0, 0);
 }
 
@@ -627,54 +650,6 @@ watch(leftTab, (tab) => {
   }
 });
 
-// 下载序列帧
-async function downloadFrames() {
-  if (validResults.value.length === 0) {
-    alert("没有可下载的帧");
-    return;
-  }
-
-  try {
-    // 创建 ZIP 文件（简化版：逐个下载）
-    for (let i = 0; i < validResults.value.length; i++) {
-      const r = validResults.value[i];
-      const canvas = document.createElement("canvas");
-      canvas.width = r.imageData.width;
-      canvas.height = r.imageData.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) continue;
-
-      // 添加白色背景
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.putImageData(r.imageData, 0, 0);
-
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((b) => {
-          if (b) resolve(b);
-          else reject(new Error("转换失败"));
-        }, "image/png");
-      });
-
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `frame_${String(i + 1).padStart(4, "0")}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      // 添加短暂延迟，避免浏览器阻止多次下载
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-
-    alert("序列帧下载完成！");
-  } catch (error: any) {
-    console.error("下载序列帧失败:", error);
-    alert("下载失败: " + error.message);
-  }
-}
 
 // 监听ESC键取消拾取
 function handleKeyDown(e: KeyboardEvent) {

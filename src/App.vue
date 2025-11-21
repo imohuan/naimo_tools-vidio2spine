@@ -38,6 +38,12 @@
           :frames="selectedFrameObjects"
           :is-processing="isProcessing"
           :ffmpeg-progress="ffmpegProgress"
+          @enter-sprite="goToSprite"
+        />
+        <Stage4Sprite
+          v-show="currentStage === 4"
+          class="h-full"
+          :results="cutoutResults"
         />
       </div>
     </div>
@@ -53,6 +59,7 @@ import Timeline from "./components/Timeline.vue";
 import Stage1Crop from "./views/Stage1Crop.vue";
 import Stage2Frames from "./views/Stage2Frames.vue";
 import Stage3Cutout from "./views/Stage3Cutout.vue";
+import Stage4Sprite from "./views/Stage4Sprite.vue";
 
 const { progress: ffmpegProgress, trimVideo, generateVideo } = useFFmpeg();
 
@@ -91,6 +98,9 @@ const loopInfo = ref<LoopInfo | null>(null);
 
 // 视频生成
 const finalVideoUrl = ref("");
+
+// 抠图结果（用于 Stage4）
+const cutoutResults = ref<Array<{ index: number; imageData: ImageData }>>([]);
 
 // 裁剪视频
 const handleTrimVideo = async (file: File, start: number, duration: number) => {
@@ -204,5 +214,16 @@ const goToCutout = () => {
   }
   currentStage.value = 3;
   maxStage.value = 3;
+};
+
+// 进入第四步雪碧图
+const goToSprite = (results: Array<{ index: number; imageData: ImageData }>) => {
+  if (results.length === 0) {
+    alert("请先完成抠图处理");
+    return;
+  }
+  cutoutResults.value = results;
+  currentStage.value = 4;
+  maxStage.value = 4;
 };
 </script>
